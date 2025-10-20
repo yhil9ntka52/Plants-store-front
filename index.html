@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Інтернет-магазин рослин</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg" style="background:#1d341c;">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1 text-beige">Інтернет-магазин рослин</span>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <h2 class="mb-4">Список рослин</h2>
+        <button id="load-plants" class="btn btn-success mb-3">Завантажити рослини</button>
+        <div id="plants-list"></div>
+    </div>
+    <footer class="mt-5 border-top pt-3 text-center" style="background:#e5dcc2; color:#194522;">
+        PlantStore &copy; 2025
+    </footer>
+    <script>
+        $('#load-plants').click(function() {
+            $.ajax({
+                url: 'http://localhost:8000/api/v1/plants/',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    let html = '';
+                    if (data.length === 0) {
+                        html = '<div class="text-danger">Рослин поки немає.</div>';
+                    } else {
+                        html = '<table class="table table-bordered table-striped"><thead><tr><th>Назва</th><th>Ціна, ₴</th><th>Опис</th></tr></thead><tbody>';
+                        $.each(data, function(i, plant) {
+                            html += `<tr>
+                                <td>${plant.name}</td>
+                                <td>${plant.price}</td>
+                                <td>${plant.short_description || ''}</td>
+                            </tr>`;
+                        });
+                        html += '</tbody></table>';
+                    }
+                    $('#plants-list').html(html);
+                },
+                error: function() {
+                    $('#plants-list').html('<div class="text-danger">Не вдалося отримати дані з API.</div>');
+                }
+            });
+        });
+    </script>
+    <style>
+        .navbar {
+            border-bottom: 2px solid #204e29;
+        }
+        .text-beige {
+            color: #f9f3e6;
+        }
+        h2 {
+            color: #1d341c;
+            font-weight: 500;
+        }
+        .btn-success {
+            background: #194522;
+            border: none;
+        }
+    </style>
+</body>
+</html>
